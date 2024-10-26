@@ -30,7 +30,7 @@ bool FFDecode::Open(XParameter param) {
 }
 
 bool FFDecode::SendPacket(XData data) {
-    if (!data.packet || data.psize < 0)return false;
+    if (!data.packet || data.size < 0)return false;
     if (!codec) {
         return false;
     }
@@ -55,7 +55,7 @@ XData FFDecode::ReceiveFrame() {
     }
     d.frame = frame;
     if (codec->codec_type == AVMEDIA_TYPE_VIDEO) {
-        d.psize = (frame->linesize[0] + frame->linesize[1] + frame->linesize[2]) * frame->height;
+        d.size = (frame->linesize[0] + frame->linesize[1] + frame->linesize[2]) * frame->height;
     }
 
     return d;

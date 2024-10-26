@@ -12,8 +12,7 @@ extern "C" {
 struct XData {
     AVPacket *packet = nullptr;
     AVFrame *frame = nullptr;
-    int psize = 0;
-    int fsize = 0;
+    int size = 0;
 
     void Drop();
 };

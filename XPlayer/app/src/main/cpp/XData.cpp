@@ -9,5 +9,5 @@ void XData::Drop() {
     if (!packet)return;
     av_packet_free(&packet);
     packet = nullptr;
-    psize = 0;
+    size = 0;
 }

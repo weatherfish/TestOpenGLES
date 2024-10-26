@@ -37,7 +37,7 @@ XData FFDemux::Read() {
     }
 //    XLOGI("packet->size = %d, packet->pts = %lu", packet->size, packet->pts);
     d.packet = packet;
-    d.psize = packet->size;
+    d.size = packet->size;
     return d;
 }
 
