@@ -22,6 +22,8 @@ bool FFDemux::Open(const char *url) {
     this->totalMs = ic->duration / (AV_TIME_BASE / 1000);
     XLOGI("## totalMS = %lu", this->totalMs);
 
+    GetVParam();
+    GetAParam();
     return true;
 }
 
@@ -38,6 +40,14 @@ XData FFDemux::Read() {
 //    XLOGI("packet->size = %d, packet->pts = %lu", packet->size, packet->pts);
     d.packet = packet;
     d.size = packet->size;
+    if (packet->stream_index == audioStream) {
+        d.isAudio = true;
+    } else if (packet->stream_index == videoStream) {
+        d.isAudio = false;
+    } else {//既不是音频也不是视频
+        av_packet_free(&packet);
+        return d;
+    }
     return d;
 }
 
@@ -48,19 +58,36 @@ FFDemux::FFDemux() {
     }
 }
 
-XParameter FFDemux::GetParam() {
+XParameter FFDemux::GetVParam() {
     XParameter p = {};
     if (!ic) {
-        XLOGE("GetParam ic is null");
+        XLOGE("GetVParam ic is null");
         return p;
     }
     int re = av_find_best_stream(ic, AVMEDIA_TYPE_VIDEO, -1, -1, nullptr, 0); //获取视频流索引
     if (re < 0) {
         //找不到索引
-        XLOGE("av_find_best_stream failed");
+        XLOGE("av_find_best_stream video failed");
         return p;
     }
     p.param = ic->streams[re]->codecpar;
+    videoStream = re;
+    return p;
+}
 
+XParameter FFDemux::GetAParam() {
+    XParameter p = {};
+    if (!ic) {
+        XLOGE("GetAParam ic is null");
+        return p;
+    }
+    int re = av_find_best_stream(ic, AVMEDIA_TYPE_AUDIO, -1, -1, nullptr, 0); //获取视频流索引
+    if (re < 0) {
+        //找不到索引
+        XLOGE("av_find_best_stream audio failed");
+        return p;
+    }
+    p.param = ic->streams[re]->codecpar;
+    audioStream = re;
     return p;
 }

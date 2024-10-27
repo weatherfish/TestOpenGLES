@@ -18,17 +18,20 @@ Java_com_felix_xplayer_MainActivity_stringFromJNI(
         jobject /* this */) {
     std::string hello = "Hello from C++";
 
-    auto *tob = new TestOb();
     IDemux *demux = new FFDemux();
-    demux->AddObserver(tob);
     demux->Open("/sdcard/sample.mp4");
 
-    IDecode *decode = new FFDecode();
-    decode->Open(demux->GetParam());
+    IDecode *vdecode = new FFDecode();
+    vdecode->Open(demux->GetVParam());
+    demux->AddObserver(vdecode);
+
+    IDecode *adecode = new FFDecode();
+    adecode->Open(demux->GetAParam());
+    demux->AddObserver(adecode);
 
     demux->Start();
-    XSleep(3000);
-    demux->Stop();
+    vdecode->Start();
+    adecode->Start();
 //    XData d = demux->Read();
 //    XLOGI("Read data size is %d", d.size);
     return env->NewStringUTF(hello.c_str());

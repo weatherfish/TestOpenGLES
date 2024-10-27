@@ -13,6 +13,7 @@ struct XData {
     AVPacket *packet = nullptr;
     AVFrame *frame = nullptr;
     int size = 0;
+    bool isAudio = false;
 
     void Drop();
 };

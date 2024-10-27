@@ -26,6 +26,14 @@ bool FFDecode::Open(XParameter param) {
         return false;
     }
 
+    if (codec->codec_type == AVMEDIA_TYPE_AUDIO) {
+        this->isAudio = true;
+    } else if (codec->codec_type == AVMEDIA_TYPE_VIDEO) {
+        this->isAudio = false;
+    } else {
+        //都不是的处理
+    }
+
     return true;
 }
 
@@ -50,12 +58,16 @@ XData FFDecode::ReceiveFrame() {
     if (!frame)frame = av_frame_alloc();
     int re = avcodec_receive_frame(codec, frame);
     if (re != 0) {
-        XLOGE("avcodec_receive_frame error %s", av_err2str(re));
+//        XLOGE("avcodec_receive_frame error %s", av_err2str(re));
         return d;
     }
     d.frame = frame;
     if (codec->codec_type == AVMEDIA_TYPE_VIDEO) {
         d.size = (frame->linesize[0] + frame->linesize[1] + frame->linesize[2]) * frame->height;
+    } else if (codec->codec_type == AVMEDIA_TYPE_AUDIO) {
+        //样本字节数 * 单通道样本数 * 通道数
+        d.size = av_get_bytes_per_sample(static_cast<AVSampleFormat>(frame->format)) *
+                 frame->nb_samples * 2;
     }
 
     return d;

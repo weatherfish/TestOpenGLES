@@ -15,7 +15,8 @@ class IDemux : public IObserver {
 public:
     virtual bool Open(const char *url) = 0;
 
-    virtual XParameter GetParam() = 0; //获取视频参数
+    virtual XParameter GetVParam() = 0; //获取视频参数
+    virtual XParameter GetAParam() = 0; //获取音频参数
 
     virtual XData Read() = 0; //数据由调用者清理
 
