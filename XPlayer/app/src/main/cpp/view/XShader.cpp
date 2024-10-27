@@ -5,6 +5,7 @@
 #include "XShader.h"
 #include "../XLog.h"
 #include <GLES2/gl2.h>
+#include <string>
 
 #define GET_STR(x) #x
 
@@ -83,6 +84,33 @@ static GLuint InitShader(const char *code, GLint type) {
     return shader;
 }
 
+static void checkGLError() {
+    GLenum error = glGetError();
+    while (error != GL_NO_ERROR) {
+        std::string errorString;
+        switch (error) {
+            case GL_INVALID_ENUM:
+                errorString = "GL_INVALID_ENUM";
+                break;
+            case GL_INVALID_VALUE:
+                errorString = "GL_INVALID_VALUE";
+                break;
+            case GL_INVALID_OPERATION:
+                errorString = "GL_INVALID_OPERATION";
+                break;
+            case GL_OUT_OF_MEMORY:
+                errorString = "GL_OUT_OF_MEMORY";
+                break;
+            default:
+                errorString = "Unknown error";
+                break;
+        }
+        XLOGE("OpenGL Error [%s] ", errorString.c_str());
+        // 再次调用以移除所有报错
+        error = glGetError();
+    }
+}
+
 bool XShader::Init() {
     vertexShader = InitShader(vertexShaderSrc, GL_VERTEX_SHADER);
     fragmentShader = InitShader(fragmentShaderSrc, GL_FRAGMENT_SHADER);
@@ -130,7 +158,7 @@ bool XShader::Init() {
     glUniform1i(glGetUniformLocation(program, "vTexture"), 2);
 
     XLOGI("Init Shader success");
-
+    checkGLError();
     return true;
 }
 
@@ -160,4 +188,5 @@ void XShader::Draw() {
     }
     XLOGI("XShader Drawing");
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    checkGLError();
 }

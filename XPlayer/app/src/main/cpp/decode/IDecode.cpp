@@ -43,6 +43,4 @@ void IDecode::Update(XData data) {
         lock.unlock();
         XSleep(1);
     }
-
-
 }

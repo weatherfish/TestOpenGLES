@@ -55,7 +55,9 @@ XData FFDecode::ReceiveFrame() {
     if (!codec) {
         return d;
     }
-    if (!frame)frame = av_frame_alloc();
+    if (!frame) {
+        frame = av_frame_alloc();
+    }
     int re = avcodec_receive_frame(codec, frame);
     if (re != 0) {
 //        XLOGE("avcodec_receive_frame error %s", av_err2str(re));

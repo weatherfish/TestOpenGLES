@@ -12,11 +12,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
         init()
-        binding.video.setOnClickListener {
-            startActivity(Intent(this, VideoActivity::class.java))
-        }
+        setContentView(binding.root)
+//        binding.video.setOnClickListener {
+//            startActivity(Intent(this, VideoActivity::class.java))
+//        }
     }
 
     external fun init(): String
