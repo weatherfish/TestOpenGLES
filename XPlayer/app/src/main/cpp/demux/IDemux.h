@@ -7,9 +7,9 @@
 
 
 #include <cstdint>
-#include "XData.h"
-#include "IObserver.h"
-#include "XParameter.h"
+#include "../XData.h"
+#include "../IObserver.h"
+#include "../XParameter.h"
 
 class IDemux : public IObserver {
 public:

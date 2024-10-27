@@ -3,7 +3,7 @@
 //
 
 #include "FFDecode.h"
-#include "XLog.h"
+#include "../XLog.h"
 
 bool FFDecode::Open(XParameter param) {
     AVCodecParameters *p = param.param;

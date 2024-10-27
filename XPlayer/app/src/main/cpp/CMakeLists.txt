@@ -30,15 +30,20 @@ add_library(swscale SHARED IMPORTED)
 set_target_properties(swscale PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/libs/${ANDROID_ABI}/libswscale.so)
 
 add_library(${CMAKE_PROJECT_NAME} SHARED
-        IDemux.cpp
-        FFDemux.cpp
+        demux/IDemux.cpp
+        demux/FFDemux.cpp
         XData.cpp
         XLog.cpp
         XThread.cpp
         IObserver.cpp
-        IDecode.cpp
-        FFDecode.cpp
+        decode/IDecode.cpp
+        decode/FFDecode.cpp
         XParameter.cpp
+        view/IVideoView.cpp
+        view/GLVideoView.cpp
+        view/XTexture.cpp
+        view/XShader.cpp
+        view/XEGL.cpp
         native-lib.cpp)
 
 target_link_libraries(${CMAKE_PROJECT_NAME}

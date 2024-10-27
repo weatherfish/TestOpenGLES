@@ -3,7 +3,7 @@
 //
 
 #include "IDemux.h"
-#include "XLog.h"
+#include "../XLog.h"
 
 void IDemux::Main() {
     while (!isExit) {

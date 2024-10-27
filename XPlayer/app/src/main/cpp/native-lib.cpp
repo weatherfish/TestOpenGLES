@@ -1,9 +1,12 @@
 #include <jni.h>
 #include <string>
-#include "FFDemux.h"
+#include "demux/FFDemux.h"
 #include "XLog.h"
-#include "IDecode.h"
-#include "FFDecode.h"
+#include "decode/IDecode.h"
+#include "decode/FFDecode.h"
+#include "view/XEGL.h"
+#include <android/native_window_jni.h>
+#include <EGL/egl.h>
 
 class TestOb : public IObserver {
 public:
@@ -35,4 +38,11 @@ Java_com_felix_xplayer_MainActivity_stringFromJNI(
 //    XData d = demux->Read();
 //    XLOGI("Read data size is %d", d.size);
     return env->NewStringUTF(hello.c_str());
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_felix_xplayer_view_XPlay_initView(JNIEnv *env, jobject thiz, jobject surface) {
+    ANativeWindow *win = ANativeWindow_fromSurface(env, surface);
+    auto *egl = XEGL::Get();
+    egl->Init(win);
 }

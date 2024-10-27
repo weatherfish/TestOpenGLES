@@ -6,7 +6,7 @@
 #define XPLAYER_FFDECODE_H
 
 
-#include "XParameter.h"
+#include "../XParameter.h"
 #include "IDecode.h"
 
 class FFDecode : public IDecode {

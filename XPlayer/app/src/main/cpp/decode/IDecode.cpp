@@ -3,7 +3,7 @@
 //
 
 #include "IDecode.h"
-#include "XLog.h"
+#include "../XLog.h"
 
 void IDecode::Main() {
     while (!isExit) {

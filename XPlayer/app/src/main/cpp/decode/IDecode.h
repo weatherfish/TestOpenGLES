@@ -5,8 +5,8 @@
 #ifndef XPLAYER_IDECODE_H
 #define XPLAYER_IDECODE_H
 
-#include "XParameter.h"
-#include "IObserver.h"
+#include "../XParameter.h"
+#include "../IObserver.h"
 #include <list>
 
 //解码，支持硬解码

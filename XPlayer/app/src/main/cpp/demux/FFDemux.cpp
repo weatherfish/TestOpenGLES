@@ -3,7 +3,7 @@
 //
 
 #include "FFDemux.h"
-#include "XLog.h"
+#include "../XLog.h"
 
 
 bool FFDemux::Open(const char *url) {
