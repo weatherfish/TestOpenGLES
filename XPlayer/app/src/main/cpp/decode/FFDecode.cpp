@@ -38,11 +38,11 @@ bool FFDecode::Open(XParameter param) {
 }
 
 bool FFDecode::SendPacket(XData data) {
-    if (!data.packet || data.size < 0)return false;
+    if (!data.data || data.size < 0)return false;
     if (!codec) {
         return false;
     }
-    int re = avcodec_send_packet(codec, data.packet);
+    int re = avcodec_send_packet(codec, reinterpret_cast<AVPacket *>(data.data));
     if (re != 0) {
         XLOGE("avcodec_send_packet error %s", av_err2str(re));
         return false;
@@ -61,14 +61,17 @@ XData FFDecode::ReceiveFrame() {
 //        XLOGE("avcodec_receive_frame error %s", av_err2str(re));
         return d;
     }
-    d.frame = frame;
+    d.data = frame;
     if (codec->codec_type == AVMEDIA_TYPE_VIDEO) {
+        d.width = frame->width;
+        d.height = frame->height;
         d.size = (frame->linesize[0] + frame->linesize[1] + frame->linesize[2]) * frame->height;
     } else if (codec->codec_type == AVMEDIA_TYPE_AUDIO) {
         //样本字节数 * 单通道样本数 * 通道数
         d.size = av_get_bytes_per_sample(static_cast<AVSampleFormat>(frame->format)) *
                  frame->nb_samples * 2;
     }
+    memcpy(d.datas, frame->data, sizeof(frame->data));
 
     return d;
 }

@@ -38,7 +38,7 @@ XData FFDemux::Read() {
         return d;
     }
 //    XLOGI("packet->size = %d, packet->pts = %lu", packet->size, packet->pts);
-    d.packet = packet;
+    d.data = packet;
     d.size = packet->size;
     if (packet->stream_index == audioStream) {
         d.isAudio = true;

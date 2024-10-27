@@ -6,8 +6,8 @@
 
 
 void XData::Drop() {
-    if (!packet)return;
-    av_packet_free(&packet);
-    packet = nullptr;
+    if (!data)return;
+    av_packet_free(reinterpret_cast<AVPacket **>(&data));
+    data = nullptr;
     size = 0;
 }

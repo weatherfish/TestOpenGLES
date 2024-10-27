@@ -1,8 +1,8 @@
 package com.felix.xplayer
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.TextView
 import com.felix.xplayer.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -13,9 +13,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        init()
+        binding.video.setOnClickListener {
+            startActivity(Intent(this, VideoActivity::class.java))
+        }
     }
 
-    external fun stringFromJNI(): String
+    external fun init(): String
 
     companion object {
         init {

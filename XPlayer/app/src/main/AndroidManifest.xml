@@ -18,6 +18,9 @@
         android:theme="@style/Theme.XPlayer"
         tools:targetApi="31">
         <activity
+            android:name=".VideoActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

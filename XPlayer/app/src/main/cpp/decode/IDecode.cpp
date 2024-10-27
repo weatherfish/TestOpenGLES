@@ -19,7 +19,7 @@ void IDecode::Main() {
             while (!isExit) {
                 //获取解码数据,一个数据包可能会有多个解码结果
                 XData frame = ReceiveFrame();
-                if (!frame.frame) break;
+                if (!frame.data) break;
                 XLOGI("ReceiveFrame size = %d", frame.size);
                 this->NotifyAll(frame);//发送数据给观察者
             }

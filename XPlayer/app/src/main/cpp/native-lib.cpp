@@ -5,6 +5,9 @@
 #include "decode/IDecode.h"
 #include "decode/FFDecode.h"
 #include "view/XEGL.h"
+#include "view/XShader.h"
+#include "view/IVideoView.h"
+#include "view/GLVideoView.h"
 #include <android/native_window_jni.h>
 #include <EGL/egl.h>
 
@@ -15,8 +18,10 @@ public:
     }
 };
 
+IVideoView *view = nullptr;
+
 extern "C" JNIEXPORT jstring JNICALL
-Java_com_felix_xplayer_MainActivity_stringFromJNI(
+Java_com_felix_xplayer_MainActivity_init(
         JNIEnv *env,
         jobject /* this */) {
     std::string hello = "Hello from C++";
@@ -32,6 +37,9 @@ Java_com_felix_xplayer_MainActivity_stringFromJNI(
     adecode->Open(demux->GetAParam());
     demux->AddObserver(adecode);
 
+    view = new GLVideoView();
+    vdecode->AddObserver(view);
+
     demux->Start();
     vdecode->Start();
     adecode->Start();
@@ -39,10 +47,15 @@ Java_com_felix_xplayer_MainActivity_stringFromJNI(
 //    XLOGI("Read data size is %d", d.size);
     return env->NewStringUTF(hello.c_str());
 }
+
+
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_felix_xplayer_view_XPlay_initView(JNIEnv *env, jobject thiz, jobject surface) {
     ANativeWindow *win = ANativeWindow_fromSurface(env, surface);
-    auto *egl = XEGL::Get();
-    egl->Init(win);
+    view->SetRender(win);
+//    auto *egl = XEGL::Get();
+//    egl->Init(win);
+//    XShader shader;
+//    shader.Init();
 }

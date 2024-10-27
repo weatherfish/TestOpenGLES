@@ -45,8 +45,11 @@ public:
         eglChooseConfig(display, configSpec, &config, 1, &numConfigs);
         checkEGLError("eglChooseConfig");
 
-        surface = eglCreateWindowSurface(display, configSpec, window, nullptr);
-
+        surface = eglCreateWindowSurface(display, config, window, nullptr);
+        if (surface == EGL_NO_SURFACE) {
+            XLOGE("eglCreateWindowSurface error");
+            return false;
+        }
         //打开上下文
         EGLint contextAttributes[] = {EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE};
         context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttributes);
@@ -61,6 +64,14 @@ public:
         XLOGI("EGL Init success");
 
         return true;
+    }
+
+    void Draw() override {
+        if (display == EGL_NO_DISPLAY || surface == EGL_NO_SURFACE) {
+            XLOGI("display or surface is null");
+            return;
+        }
+        eglSwapBuffers(display, surface);
     }
 };
 

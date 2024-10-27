@@ -79,6 +79,8 @@ Java_com_felix_test_opengl_android_XPlay_open(JNIEnv *env, jobject thiz, jstring
 
     // Check shader compilation success
     GLint status;
+    int width = 200;
+    int height = 200;
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
     if (status != GL_TRUE) {
         LOGE("Vertex shader compilation failed");
@@ -101,44 +103,85 @@ Java_com_felix_test_opengl_android_XPlay_open(JNIEnv *env, jobject thiz, jstring
         LOGE("Program linkage failed");
         return;
     }
-
     glUseProgram(program);
 
-    // Buffers for YUV data
-    int width = 424;
-    int height = 240;
-    unsigned char *buf[3] = {nullptr};
+    //加入顶点数据
+    GLuint aPos = glGetAttribLocation(program, "aPosition");
+    glEnableVertexAttribArray(aPos);
+    //传递顶点
+    glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 3, ver);
 
+    //加入材质数据
+    GLuint aTex = glGetAttribLocation(program, "aTextCord");
+    glEnableVertexAttribArray(aTex);
+    glVertexAttribPointer(aTex, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 2, tex);
+
+    //材质纹理初始化
+    //设置纹理层
+    glUniform1i(glGetUniformLocation(program, "yTexture"), 0);
+    glUniform1i(glGetUniformLocation(program, "uTexture"), 1);
+    glUniform1i(glGetUniformLocation(program, "vTexture"), 2);
+
+    //创建OpenGL纹理
+    GLuint texts[3] = {0};
+    glGenTextures(3, texts);
+
+    glBindTexture(GL_TEXTURE_2D, texts[0]);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    //设置纹理大小格式
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0, GL_LUMINANCE,
+                 GL_UNSIGNED_BYTE, nullptr);
+
+    glBindTexture(GL_TEXTURE_2D, texts[1]);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    //设置纹理大小格式
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, width / 2, height / 2, 0, GL_LUMINANCE,
+                 GL_UNSIGNED_BYTE, nullptr);
+
+    glBindTexture(GL_TEXTURE_2D, texts[2]);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    //设置纹理大小格式
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, width / 2, height / 2, 0, GL_LUMINANCE,
+                 GL_UNSIGNED_BYTE, nullptr);
+
+    unsigned char *buf[3] = {nullptr};
+    //纹理的修改和显示
     buf[0] = new unsigned char[width * height];
     buf[1] = new unsigned char[width * height / 4];
     buf[2] = new unsigned char[width * height / 4];
 
-    GLuint texYUV[3];
-    glGenTextures(3, texYUV);
-
-    // Main rendering loop
     for (int i = 0; i < 1000; ++i) {
-        memset(buf[0], i, width * height);
-        memset(buf[1], i, width * height / 4);
-        memset(buf[2], i, width * height / 4);
+//            memset(buf[0], i, width * height);
+//            memset(buf[1], i, width * height / 4);
+//            memset(buf[2], i, width * height / 4);
 
-        // Update texture with new data
-        for (int j = 0; j < 3; ++j) {
-            glActiveTexture(GL_TEXTURE0 + j);
-            glBindTexture(GL_TEXTURE_2D, texYUV[j]);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0,
-                            j == 0 ? width : width / 2,
-                            j == 0 ? height : height / 2,
-                            GL_LUMINANCE, GL_UNSIGNED_BYTE, buf[j]);
+        if (feof(fp) == 0) {
+            fread(buf[0], 1, width * height, fp);
+            fread(buf[0], 1, width * height / 4, fp);
+            fread(buf[0], 1, width * height / 4, fp);
         }
 
-        // Perform drawing operations
-        glClear(GL_COLOR_BUFFER_BIT);
-        glClearColor(1.0, 0.0, 0.0, 1.0);
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4); // Use correct primitive count
+        glActiveTexture(GL_TEXTURE0); //激活第一个
+        glBindTexture(GL_TEXTURE_2D, texts[0]); //绑定到创建的y
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_LUMINANCE, GL_UNSIGNED_BYTE,
+                        buf[0]);
 
+        glActiveTexture(GL_TEXTURE0 + 1); //激活第二
+        glBindTexture(GL_TEXTURE_2D, texts[1]); //绑定到创建的y
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_LUMINANCE, GL_UNSIGNED_BYTE,
+                        buf[1]);
+
+        glActiveTexture(GL_TEXTURE0 + 2); //激活第三
+        glBindTexture(GL_TEXTURE_2D, texts[2]); //绑定到创建的y
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_LUMINANCE, GL_UNSIGNED_BYTE,
+                        buf[2]);
+
+        glDrawArrays(GL_TRIANGLES, 0, 4);
+
+        //窗口显示
         eglSwapBuffers(display, eglSurface);
     }
 
