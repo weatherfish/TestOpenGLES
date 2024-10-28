@@ -60,5 +60,6 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         swscale
         EGL
         GLESv2
+        SLES
         android
         log)

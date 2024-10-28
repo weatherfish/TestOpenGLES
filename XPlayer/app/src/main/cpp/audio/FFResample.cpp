@@ -12,7 +12,7 @@ bool FFResample::Open(XParameter in, XParameter out) {
 
         AVChannelLayout out_channel_layout = AV_CHANNEL_LAYOUT_STEREO;
         int re = swr_alloc_set_opts2(&swrContext, &out_channel_layout, AV_SAMPLE_FMT_S16,
-                                     in.param->sample_rate,
+                                     out.param->sample_rate,
                                      &out_channel_layout,
                                      static_cast<AVSampleFormat>(in.param->format),
                                      in.param->sample_rate, 0, nullptr);

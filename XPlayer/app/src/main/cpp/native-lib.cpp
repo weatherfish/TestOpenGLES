@@ -9,6 +9,8 @@
 #include "view/IVideoView.h"
 #include "view/GLVideoView.h"
 #include "audio/FFResample.h"
+#include "audio/IAudioPlayer.h"
+#include "audio/SLAudioPlayer.h"
 #include <android/native_window_jni.h>
 #include <EGL/egl.h>
 
@@ -26,7 +28,10 @@ Java_com_felix_xplayer_MainActivity_init(
         JNIEnv *env,
         jobject /* this */) {
     std::string hello = "Hello from C++";
+    return env->NewStringUTF(hello.c_str());
+}
 
+extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *res) {
     IDemux *demux = new FFDemux();
     demux->Open("/sdcard/sample.mp4");
 
@@ -41,16 +46,21 @@ Java_com_felix_xplayer_MainActivity_init(
     view = new GLVideoView();
     vdecode->AddObserver(view);
 
-//    IResample *resample = new FFResample();
-//    resample->Open(demux->GetAParam());
-//    adecode->AddObserver(resample);
+    IResample *resample = new FFResample();
+    XParameter outParam = demux->GetAParam();
+    resample->Open(demux->GetAParam(), outParam);
+    adecode->AddObserver(resample);
+
+    IAudioPlayer *audioPlayer = new SLAudioPlayer();
+    audioPlayer->StartPlay(outParam);
+    resample->AddObserver(audioPlayer);
 
     demux->Start("demux");
     vdecode->Start("vdecode");
     adecode->Start("adecode");
 //    XData d = demux->Read();
 //    XLOGI("#### Read data size is %d", d.size);
-    return env->NewStringUTF(hello.c_str());
+    return JNI_VERSION_1_6;
 }
 
 
