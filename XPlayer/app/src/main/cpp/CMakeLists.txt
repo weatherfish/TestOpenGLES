@@ -46,6 +46,8 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         view/XEGL.cpp
         audio/FFResample.cpp
         audio/IResample.cpp
+        audio/IAudioPlayer.cpp
+        audio/SLAudioPlayer.cpp
         native-lib.cpp)
 
 target_link_libraries(${CMAKE_PROJECT_NAME}

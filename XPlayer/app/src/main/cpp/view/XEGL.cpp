@@ -67,7 +67,6 @@ public:
     }
 
     void Draw() override {
-        XLOGI("#### CXEGL::Draw");
         if (display == EGL_NO_DISPLAY || surface == EGL_NO_SURFACE) {
             XLOGI("#### display or surface is null");
             return;

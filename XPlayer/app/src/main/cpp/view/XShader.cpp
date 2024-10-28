@@ -182,11 +182,9 @@ void XShader::GetTexture(unsigned int index, int width, int height, unsigned cha
 }
 
 void XShader::Draw() {
-    XLOGI("#### XShader Draw");
     if (!program) {
         XLOGI("#### XShader Error program is null");
         return;
     }
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    checkGLError("glDrawArrays");
 }
