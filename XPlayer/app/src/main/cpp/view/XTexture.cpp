@@ -12,6 +12,7 @@ public:
     XShader shader;
 
     bool Init(void *win) override {
+        XLOGI("#### CXTexture::Init");
         if (!win) {
             XLOGE("CXTexture Init failed win is null");
             return false;
@@ -22,6 +23,7 @@ public:
     }
 
     void Draw(unsigned char **data, int width, int height) override {
+        XLOGI("#### CXTexture::Draw");
         shader.GetTexture(0, width, height, data[0]);
         shader.GetTexture(1, width / 2, height / 2, data[1]);
         shader.GetTexture(2, width / 2, height / 2, data[2]);
@@ -32,5 +34,6 @@ public:
 };
 
 XTexture *XTexture::Create() {
+    XLOGI("#### CXTexture::Create");
     return new CXTexture();
 }

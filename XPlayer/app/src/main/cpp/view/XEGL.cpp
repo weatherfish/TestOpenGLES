@@ -61,14 +61,15 @@ public:
         eglMakeCurrent(display, surface, surface, context);
         checkEGLError("eglMakeCurrent");
 
-        XLOGI("EGL Init success");
+        XLOGI("#### EGL Init success");
 
         return true;
     }
 
     void Draw() override {
+        XLOGI("#### CXEGL::Draw");
         if (display == EGL_NO_DISPLAY || surface == EGL_NO_SURFACE) {
-            XLOGI("display or surface is null");
+            XLOGI("#### display or surface is null");
             return;
         }
         eglSwapBuffers(display, surface);

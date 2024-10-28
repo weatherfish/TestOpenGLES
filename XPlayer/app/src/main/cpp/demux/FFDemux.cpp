@@ -7,7 +7,7 @@
 
 
 bool FFDemux::Open(const char *url) {
-    XLOGI("## Open file url %s", url);
+    XLOGI("#### ## Open file url %s", url);
     int re = avformat_open_input(&ic, url, nullptr, nullptr);
     if (re != 0) {
         XLOGE("## avformat_open_input error %s", av_err2str(re));
@@ -20,7 +20,7 @@ bool FFDemux::Open(const char *url) {
         return false;
     }
     this->totalMs = ic->duration / (AV_TIME_BASE / 1000);
-    XLOGI("## totalMS = %lu", this->totalMs);
+    XLOGI("#### ## totalMS = %lu", this->totalMs);
 
     GetVParam();
     GetAParam();
@@ -37,7 +37,7 @@ XData FFDemux::Read() {
         av_packet_free(&packet);
         return d;
     }
-//    XLOGI("packet->size = %d, packet->pts = %lu", packet->size, packet->pts);
+//    XLOGI("#### packet->size = %d, packet->pts = %lu", packet->size, packet->pts);
     d.data = packet;
     d.size = packet->size;
     if (packet->stream_index == audioStream) {

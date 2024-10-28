@@ -3,7 +3,9 @@
 //
 
 #include "IVideoView.h"
+#include "../XLog.h"
 
 void IVideoView::Update(XData data) {
+    XLOGI("#### IVideoView::Update");
     this->Render(data);
 }

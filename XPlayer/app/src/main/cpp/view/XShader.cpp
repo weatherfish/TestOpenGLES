@@ -160,7 +160,7 @@ bool XShader::Init() {
     glUniform1i(glGetUniformLocation(program, "uTexture"), 1);
     glUniform1i(glGetUniformLocation(program, "vTexture"), 2);
 
-    XLOGI("Init Shader success");
+    XLOGI("#### Init Shader success");
     return true;
 }
 
@@ -182,8 +182,9 @@ void XShader::GetTexture(unsigned int index, int width, int height, unsigned cha
 }
 
 void XShader::Draw() {
+    XLOGI("#### XShader Draw");
     if (!program) {
-        XLOGI("XShader Error program is null");
+        XLOGI("#### XShader Error program is null");
         return;
     }
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);

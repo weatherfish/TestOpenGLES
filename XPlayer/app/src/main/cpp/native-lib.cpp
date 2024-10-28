@@ -14,7 +14,7 @@
 class TestOb : public IObserver {
 public:
     void Update(XData data) override {
-//        XLOGI("Test OB Updata data size %d", data.size);
+//        XLOGI("#### Test OB Updata data size %d", data.size);
     }
 };
 
@@ -40,11 +40,11 @@ Java_com_felix_xplayer_MainActivity_init(
     view = new GLVideoView();
     vdecode->AddObserver(view);
 
-    demux->Start();
-    vdecode->Start();
-    adecode->Start();
+    demux->Start("demux");
+    vdecode->Start("vdecode");
+    adecode->Start("adecode");
 //    XData d = demux->Read();
-//    XLOGI("Read data size is %d", d.size);
+//    XLOGI("#### Read data size is %d", d.size);
     return env->NewStringUTF(hello.c_str());
 }
 
