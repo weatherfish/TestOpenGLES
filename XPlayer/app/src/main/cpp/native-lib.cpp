@@ -8,6 +8,7 @@
 #include "view/XShader.h"
 #include "view/IVideoView.h"
 #include "view/GLVideoView.h"
+#include "audio/FFResample.h"
 #include <android/native_window_jni.h>
 #include <EGL/egl.h>
 
@@ -39,6 +40,10 @@ Java_com_felix_xplayer_MainActivity_init(
 
     view = new GLVideoView();
     vdecode->AddObserver(view);
+
+    IResample *resample = new FFResample();
+    resample->Open(demux->GetAParam());
+    adecode->AddObserver(resample);
 
     demux->Start("demux");
     vdecode->Start("vdecode");

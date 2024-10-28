@@ -44,6 +44,8 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
         view/XTexture.cpp
         view/XShader.cpp
         view/XEGL.cpp
+        audio/FFResample.cpp
+        audio/IResample.cpp
         native-lib.cpp)
 
 target_link_libraries(${CMAKE_PROJECT_NAME}

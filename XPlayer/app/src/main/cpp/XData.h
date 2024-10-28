@@ -9,9 +9,16 @@ extern "C" {
 #include <libavformat/avformat.h>
 }
 
+enum XDataType {
+    AVPACKET_TYPE = 0,
+    UCHAR_TYPE = 1,
+};
+
 struct XData {
 //    AVPacket *packet = nullptr;
 //    AVFrame *frame = nullptr;
+
+    int type = 0;
     int size = 0;
     bool isAudio = false;
 
@@ -19,6 +26,8 @@ struct XData {
     unsigned char *datas[8] = {nullptr}; //解码后的数据
     int width = 0;
     int height = 0;
+
+    bool Alloc(int size, const char *data = 0);
 
     void Drop();
 
