@@ -10,21 +10,24 @@
 #define GET_STR(x) #x
 
 // 顶点着色器
-static const char *vertexShaderSrc = GET_STR(
-        attribute vec4 aPosition;
-        attribute vec2 aTextCord;
+static const char *vertexShaderSrc = R"(
+    attribute vec4 aPosition;
+    attribute vec2 aTextCord;
 
-        varying vec2 vTexCord;
-        void main() {
-            vTexCord = vec2(aTextCord.x, 1.0 - aTextCord.y);
-            gl_Position = aPosition;
-        }
-);
+    varying vec2 vTexCord;
+
+    void main() {
+        vTexCord = vec2(aTextCord.x, 1.0 - aTextCord.y);
+        gl_Position = aPosition;
+    }
+)";
 
 // 片段着色器
-static const char *fragmentShaderSrc = GET_STR(
+static const char *fragmentShaderSrc = R"(
         precision mediump float;
+
         varying vec2 vTexCord;
+
         uniform sampler2D yTexture;
         uniform sampler2D uTexture;
         uniform sampler2D vTexture;
@@ -36,14 +39,14 @@ static const char *fragmentShaderSrc = GET_STR(
             yuv.g = texture2D(uTexture, vTexCord).r - 0.5;
             yuv.b = texture2D(vTexture, vTexCord).r - 0.5;
 
-            rgb = mat3(1.0, 1.0, 1.0,
-                       0.0, -0.39465, 2.03211,
-                       1.13983, -0.5806, 0.0) * yuv;
+            rgb = mat3(
+                1.0, 1.0, 1.0,
+                0.0, -0.39465, 2.03211,
+                1.13983, -0.5806, 0.0) * yuv;
 
-//            gl_FragColor = vec4(rgb, 1.0);
-            gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+            gl_FragColor = vec4(rgb, 1.0);
         }
-);
+)";
 
 static float ver[] = {
         1.0f, -1.0f, 0.0f,
@@ -84,7 +87,7 @@ static GLuint InitShader(const char *code, GLint type) {
     return shader;
 }
 
-static void checkGLError() {
+static void checkGLError(const std::string &funName) {
     GLenum error = glGetError();
     while (error != GL_NO_ERROR) {
         std::string errorString;
@@ -105,7 +108,7 @@ static void checkGLError() {
                 errorString = "Unknown error";
                 break;
         }
-        XLOGE("OpenGL Error [%s] ", errorString.c_str());
+        XLOGE("OpenGL [%s] Error : [%s] ", funName.c_str(), errorString.c_str());
         // 再次调用以移除所有报错
         error = glGetError();
     }
@@ -158,7 +161,6 @@ bool XShader::Init() {
     glUniform1i(glGetUniformLocation(program, "vTexture"), 2);
 
     XLOGI("Init Shader success");
-    checkGLError();
     return true;
 }
 
@@ -166,8 +168,7 @@ void XShader::GetTexture(unsigned int index, int width, int height, unsigned cha
     if (texts[index] == 0) {
         //纹理初始化
         glGenTextures(1, &texts[index]);
-
-        glBindTexture(GL_TEXTURE_2D, texts[0]);
+        glBindTexture(GL_TEXTURE_2D, texts[index]);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         //设置纹理大小格式
@@ -178,7 +179,6 @@ void XShader::GetTexture(unsigned int index, int width, int height, unsigned cha
     glBindTexture(GL_TEXTURE_2D, texts[index]); //绑定到创建的y
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_LUMINANCE, GL_UNSIGNED_BYTE,
                     buf);
-
 }
 
 void XShader::Draw() {
@@ -186,7 +186,6 @@ void XShader::Draw() {
         XLOGI("XShader Error program is null");
         return;
     }
-    XLOGI("XShader Drawing");
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-    checkGLError();
+    checkGLError("glDrawArrays");
 }
