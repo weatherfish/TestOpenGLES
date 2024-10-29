@@ -76,7 +76,9 @@ XData FFDecode::ReceiveFrame() {
     }
     d.data = frame;
     if (codec->codec_type == AVMEDIA_TYPE_VIDEO) {
-        d.width = frame->width;
+//        XLOGI("width = %d, height = %d, linesize = %d", frame->width, frame->height,
+//              frame->linesize[0]);
+        d.width = frame->linesize[0];
         d.height = frame->height;
         d.size = (frame->linesize[0] + frame->linesize[1] + frame->linesize[2]) * frame->height;
     } else if (codec->codec_type == AVMEDIA_TYPE_AUDIO) {
@@ -85,7 +87,7 @@ XData FFDecode::ReceiveFrame() {
                  frame->nb_samples * 2;
     }
     d.format = frame->format;
-    XLOGI("#### type %d frame format is %d", codec->codec_type, frame->format);
+//    XLOGI("#### type %d frame format is %d", codec->codec_type, frame->format);
     memcpy(d.datas, frame->data, sizeof(frame->data));
     return d;
 }
