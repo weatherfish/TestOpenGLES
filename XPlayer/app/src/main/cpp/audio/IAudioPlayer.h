@@ -8,6 +8,7 @@
 
 #include "../IObserver.h"
 #include "../XParameter.h"
+#include <list>
 
 class IAudioPlayer : public IObserver {
 
@@ -16,6 +17,13 @@ public:
 
     virtual bool StartPlay(XParameter out) = 0;
 
+    virtual XData GetData();//获取缓存数据，如没有则阻塞
+
+    int maxFrames = 100;
+
+protected:
+    std::list<XData> frames;
+    std::mutex framesMutex;
 };
 
 

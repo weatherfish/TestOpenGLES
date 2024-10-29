@@ -22,7 +22,7 @@ bool XData::Alloc(int count, const char *dat) {
     if (count < 0)return false;
     this->size = count;
     this->data = new unsigned char[count];
-    if (dat != nullptr) {
+    if (dat) {
         memcpy(this->data, dat, count);
     }
     return true;

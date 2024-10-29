@@ -39,10 +39,11 @@ XData FFResample::Resample(XData indata) {
     if (!swrContext || indata.size < 0 || !indata.data) return out;
 
     auto *frame = static_cast<AVFrame *>(indata.data);
-    int size = outChannel * frame->nb_samples *
-               av_get_bits_per_sample(av_get_pcm_codec(static_cast<AVSampleFormat>(outFormat), 0));
-
-    if (!out.Alloc(size)) {
+    int outSize = outChannel * frame->nb_samples *
+                  av_get_bits_per_sample(
+                          av_get_pcm_codec(static_cast<AVSampleFormat>(outFormat), 0));
+    if (outSize < 0) return out;
+    if (!out.Alloc(outSize)) {
         XLOGE("#### Failed to allocate memory for resampling");
         return out;
     }

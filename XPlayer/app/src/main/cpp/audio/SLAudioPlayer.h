@@ -14,7 +14,11 @@ class SLAudioPlayer : public IAudioPlayer {
 public:
     bool StartPlay(XParameter out) override;
 
-    static void PlayCallback(void* bufQ);
+    void PlayCallback(void *bufQ);
+
+    SLAudioPlayer();
+
+    ~SLAudioPlayer();
 
 protected:
     SLEngineItf engine = nullptr;
@@ -23,6 +27,9 @@ protected:
     SLObjectItf player = nullptr;
     SLPlayItf implPlayer = nullptr;
     SLAndroidSimpleBufferQueueItf pcmQue = nullptr;
+
+    unsigned char *buf = nullptr;
+
 };
 
 

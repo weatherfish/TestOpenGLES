@@ -7,7 +7,12 @@
 
 
 static void PcmCall(SLAndroidSimpleBufferQueueItf bf, void *context) {
-    SLAudioPlayer::PlayCallback((void *) bf);
+    auto *ap = static_cast<SLAudioPlayer *>(context);
+    if (!ap) {
+        XLOGE("SLAudioPlayer error ap is null");
+        return;
+    }
+    ap->PlayCallback((void *) bf);
 }
 
 bool SLAudioPlayer::StartPlay(XParameter out) {
@@ -80,5 +85,22 @@ bool SLAudioPlayer::StartPlay(XParameter out) {
 void SLAudioPlayer::PlayCallback(void *bufQ) {
     if (!bufQ)return;
     auto bf = static_cast<SLAndroidSimpleBufferQueueItf>(bufQ);
+    XData d = GetData();
+    if (d.size <= 0) {
+        XLOGE("GetData error size <= 0");
+        return;
+    }
+    if (!buf)return;
+    memcpy(buf, d.data, d.size);
+    (*bf)->Enqueue(bf, buf, d.size);
+    d.Drop();
+}
 
+SLAudioPlayer::SLAudioPlayer() {
+    buf = new unsigned char[1024 * 1024];
+}
+
+SLAudioPlayer::~SLAudioPlayer() {
+    delete buf;
+    buf = nullptr;
 }
