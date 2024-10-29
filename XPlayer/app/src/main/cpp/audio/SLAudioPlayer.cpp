@@ -6,38 +6,35 @@
 #include "../XLog.h"
 
 
-SLEngineItf SLAudioPlayer::CreateSL() {
-    SLresult re;
-    SLEngineItf en;
-    re = slCreateEngine(&engineSL, 0, nullptr, 0, nullptr, nullptr);
-    if (re != SL_RESULT_SUCCESS) return nullptr;
-    re = (*engineSL)->Realize(engineSL, SL_BOOLEAN_FALSE);
-    if (re != SL_RESULT_SUCCESS) return nullptr;
-    re = (*engineSL)->GetInterface(engineSL, SL_IID_ENGINE, &en);
-    if (re != SL_RESULT_SUCCESS) return nullptr;
-    return en;
-}
-
 static void PcmCall(SLAndroidSimpleBufferQueueItf bf, void *context) {
     SLAudioPlayer::PlayCallback((void *) bf);
 }
 
 bool SLAudioPlayer::StartPlay(XParameter out) {
-    engine = CreateSL();
-    if (!engine) {
-        XLOGE("CreateSL error");
+    SLresult re = 0;
+    re = slCreateEngine(&engineSL, 0, nullptr, 0, nullptr, nullptr);
+    if (re != SL_RESULT_SUCCESS) {
+        XLOGE("#### slCreateEngine error");
         return false;
     }
-
-    SLresult re = 0;
+    re = (*engineSL)->Realize(engineSL, SL_BOOLEAN_FALSE);
+    if (re != SL_RESULT_SUCCESS) {
+        XLOGE("#### engineSL Realize error");
+        return false;
+    }
+    re = (*engineSL)->GetInterface(engineSL, SL_IID_ENGINE, &engine);
+    if (re != SL_RESULT_SUCCESS) {
+        XLOGE("#### engineSL GetInterface error");
+        return false;
+    }
     re = (*engine)->CreateOutputMix(engine, &mix, 0, nullptr, nullptr);
     if (re != SL_RESULT_SUCCESS) {
-        XLOGE("CreateOutputMix error");
+        XLOGE("#### CreateOutputMix error");
         return false;
     }
     re = (*mix)->Realize(mix, SL_BOOLEAN_FALSE);
     if (re != SL_RESULT_SUCCESS) {
-        XLOGE("mix Realize error");
+        XLOGE("#### mix Realize error");
         return false;
     }
     SLDataLocator_OutputMix outputMix = {SL_DATALOCATOR_OUTPUTMIX, mix};
@@ -60,19 +57,23 @@ bool SLAudioPlayer::StartPlay(XParameter out) {
     re = (*engine)->CreateAudioPlayer(engine, &player, &ds, &audioSink,
                                       sizeof(ids) / sizeof(SLInterfaceID), ids, req);
     if (re != SL_RESULT_SUCCESS) {
-        XLOGE("CreateAudioPlayer error");
+        XLOGE("#### CreateAudioPlayer error");
         return false;
     }
     (*player)->Realize(player, SL_BOOLEAN_FALSE);
     re = (*player)->GetInterface(player, SL_IID_PLAY, &implPlayer);
     if (re != SL_RESULT_SUCCESS) {
-        XLOGE("player GetInterface error");
+        XLOGE("#### player GetInterface error");
         return false;
+    }
+    re = (*player)->GetInterface(player, SL_IID_BUFFERQUEUE, &pcmQue);
+    if (re != SL_RESULT_SUCCESS) {
+        XLOGE("###playerImpl GetInterface SL_IID_BUFFERQUEUE Failed");
     }
     (*pcmQue)->RegisterCallback(pcmQue, PcmCall, this);
     (*implPlayer)->SetPlayState(implPlayer, SL_PLAYSTATE_PLAYING);
     (*pcmQue)->Enqueue(pcmQue, "", 1);
-    XLOGI("SLAudioPlay startPlay success");
+    XLOGI("#### SLAudioPlay startPlay success");
     return true;
 }
 

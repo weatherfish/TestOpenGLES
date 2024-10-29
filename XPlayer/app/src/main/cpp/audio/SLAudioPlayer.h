@@ -17,8 +17,6 @@ public:
     static void PlayCallback(void* bufQ);
 
 protected:
-    SLEngineItf CreateSL();
-
     SLEngineItf engine = nullptr;
     SLObjectItf engineSL = nullptr;
     SLObjectItf mix = nullptr;

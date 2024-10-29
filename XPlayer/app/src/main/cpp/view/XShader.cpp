@@ -66,7 +66,7 @@ static float tex[] = {
 static GLuint InitShader(const char *code, GLint type) {
     GLuint shader = glCreateShader(type);
     if (shader == 0) {
-        XLOGE("Failed to create shader");
+        XLOGE("#### Failed to create shader");
         return 0;
     }
 
@@ -79,7 +79,7 @@ static GLuint InitShader(const char *code, GLint type) {
     if (compileStatus != GL_TRUE) {
         GLchar infoLog[512];
         glGetShaderInfoLog(shader, sizeof(infoLog), NULL, infoLog);
-        XLOGE("Error compiling shader: %s", infoLog);
+        XLOGE("#### Error compiling shader: %s", infoLog);
         glDeleteShader(shader); // Delete the shader as it's not usable
         return 0;
     }
@@ -108,7 +108,7 @@ static void checkGLError(const std::string &funName) {
                 errorString = "Unknown error";
                 break;
         }
-        XLOGE("OpenGL [%s] Error : [%s] ", funName.c_str(), errorString.c_str());
+        XLOGE("#### OpenGL [%s] Error : [%s] ", funName.c_str(), errorString.c_str());
         // 再次调用以移除所有报错
         error = glGetError();
     }
@@ -121,12 +121,12 @@ bool XShader::Init() {
     GLint status;
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
     if (status != GL_TRUE) {
-        XLOGE("Vertex shader compilation failed");
+        XLOGE("#### Vertex shader compilation failed");
         return false;
     }
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &status);
     if (status != GL_TRUE) {
-        XLOGE("Fragment shader compilation failed");
+        XLOGE("#### Fragment shader compilation failed");
         return false;
     }
 
@@ -138,7 +138,7 @@ bool XShader::Init() {
 
     glGetProgramiv(program, GL_LINK_STATUS, &status);
     if (status != GL_TRUE) {
-        XLOGE("Program linkage failed");
+        XLOGE("#### Program linkage failed");
         return false;
     }
     glUseProgram(program);

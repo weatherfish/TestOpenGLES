@@ -10,7 +10,7 @@ bool FFDecode::Open(XParameter param) {
     //查找解码器
     const AVCodec *cd = avcodec_find_decoder(p->codec_id);
     if (!cd) {
-        XLOGE("avcodec_find_decoder %d failed", p->codec_id);
+        XLOGE("#### avcodec_find_decoder %d failed", p->codec_id);
         return false;
     }
     //创建解码上下文，并复制参数
@@ -22,7 +22,7 @@ bool FFDecode::Open(XParameter param) {
     //打开解码器
     int re = avcodec_open2(codec, cd, nullptr);
     if (re != 0) {
-        XLOGE("avcodec_open2 error %s", av_err2str(re));
+        XLOGE("#### avcodec_open2 error %s", av_err2str(re));
         return false;
     }
 
@@ -44,7 +44,7 @@ bool FFDecode::SendPacket(XData data) {
     }
     int re = avcodec_send_packet(codec, reinterpret_cast<AVPacket *>(data.data));
     if (re != 0) {
-        XLOGE("avcodec_send_packet error %s", av_err2str(re));
+        XLOGE("#### avcodec_send_packet error %s", av_err2str(re));
         return false;
     }
     return true;

@@ -6,7 +6,7 @@ bool FFResample::Open(XParameter in, XParameter out) {
     if (in.param->format) {
         swrContext = swr_alloc();
         if (!swrContext) {
-            XLOGE("Failed to allocate SwrContext");
+            XLOGE("#### Failed to allocate SwrContext");
             return false;
         }
 
@@ -17,14 +17,14 @@ bool FFResample::Open(XParameter in, XParameter out) {
                                      static_cast<AVSampleFormat>(in.param->format),
                                      in.param->sample_rate, 0, nullptr);
         if (re < 0) {
-            XLOGE("swr_alloc_set_opts2 failed: %d", re);
+            XLOGE("#### swr_alloc_set_opts2 failed: %d", re);
             swr_free(&swrContext);
             return false;
         }
 
         re = swr_init(swrContext);
         if (re != 0) {
-            XLOGE("swr init failed with error code: %d", re);
+            XLOGE("#### swr init failed with error code: %d", re);
             swr_free(&swrContext);
             return false;
         }
@@ -43,7 +43,7 @@ XData FFResample::Resample(XData indata) {
                av_get_bits_per_sample(av_get_pcm_codec(static_cast<AVSampleFormat>(outFormat), 0));
 
     if (!out.Alloc(size)) {
-        XLOGE("Failed to allocate memory for resampling");
+        XLOGE("#### Failed to allocate memory for resampling");
         return out;
     }
 
@@ -52,11 +52,11 @@ XData FFResample::Resample(XData indata) {
     int len = swr_convert(swrContext, outArr, frame->nb_samples, frame->data, frame->nb_samples);
     if (len < 0) {
         out.Drop();
-        XLOGE("swr_convert failed with length: %d", len);
+        XLOGE("#### swr_convert failed with length: %d", len);
         return out;
     }
 
-    XLOGI("Resample out with size: %d", out.size);
+    XLOGI("#### Resample out with size: %d", out.size);
     return out;
 }
 

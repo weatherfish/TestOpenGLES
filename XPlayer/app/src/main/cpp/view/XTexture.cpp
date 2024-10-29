@@ -13,7 +13,7 @@ public:
 
     bool Init(void *win) override {
         if (!win) {
-            XLOGE("CXTexture Init failed win is null");
+            XLOGE("#### CXTexture Init failed win is null");
             return false;
         }
         if (!XEGL::Get()->Init(win))return false;

@@ -16,7 +16,7 @@ public:
     static void checkEGLError(const char *operation) {
         EGLint error;
         while ((error = eglGetError()) != EGL_SUCCESS) {
-            XLOGE("EGL error after %s(): 0x%x", operation, error);
+            XLOGE("#### EGL error after %s(): 0x%x", operation, error);
         }
     }
 
@@ -25,7 +25,7 @@ public:
         //初始化EGL
         display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
         if (display == EGL_NO_DISPLAY) {
-            XLOGE("eglGetDisplay error");
+            XLOGE("#### eglGetDisplay error");
             return false;
         }
         eglInitialize(display, nullptr, nullptr);
@@ -47,14 +47,14 @@ public:
 
         surface = eglCreateWindowSurface(display, config, window, nullptr);
         if (surface == EGL_NO_SURFACE) {
-            XLOGE("eglCreateWindowSurface error");
+            XLOGE("#### eglCreateWindowSurface error");
             return false;
         }
         //打开上下文
         EGLint contextAttributes[] = {EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE};
         context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttributes);
         if (context == EGL_NO_CONTEXT) {
-            XLOGE("eglCreateContext error");
+            XLOGE("#### eglCreateContext error");
             return false;
         }
 
