@@ -32,6 +32,8 @@ Java_com_felix_xplayer_MainActivity_init(
 }
 
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *res) {
+    FFDecode::InitHard(vm);
+
     IDemux *demux = new FFDemux();
     demux->Open("/sdcard/sample.mp4");
 

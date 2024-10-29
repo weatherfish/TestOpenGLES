@@ -5,12 +5,23 @@
 #include "FFDecode.h"
 #include "../XLog.h"
 
+extern "C" {
+#include <libavcodec/jni.h>
+}
+
 bool FFDecode::Open(XParameter param) {
+    this->Open(param, false);
+}
+
+bool FFDecode::Open(XParameter param, bool isHard) {
     AVCodecParameters *p = param.param;
     //查找解码器
     const AVCodec *cd = avcodec_find_decoder(p->codec_id);
+    if (isHard) {
+        cd = avcodec_find_decoder_by_name("h264_mediacodec");//
+    }
     if (!cd) {
-        XLOGE("#### avcodec_find_decoder %d failed", p->codec_id);
+        XLOGE("#### avcodec_find_decoder %d failed isHard = %d", p->codec_id, isHard);
         return false;
     }
     //创建解码上下文，并复制参数
@@ -73,7 +84,13 @@ XData FFDecode::ReceiveFrame() {
         d.size = av_get_bytes_per_sample(static_cast<AVSampleFormat>(frame->format)) *
                  frame->nb_samples * 2;
     }
+    d.format = frame->format;
+//    XLOGI("#### frame format is %d", frame->format);
     memcpy(d.datas, frame->data, sizeof(frame->data));
 
     return d;
+}
+
+void FFDecode::InitHard(void *vm) {
+    av_jni_set_java_vm(vm, nullptr);
 }

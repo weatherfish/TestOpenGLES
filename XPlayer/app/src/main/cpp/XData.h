@@ -29,6 +29,8 @@ struct XData {
 
     bool Alloc(int size, const char *data = nullptr);
 
+    int format = 0;//
+
     void Drop();
 
 

@@ -11,7 +11,10 @@
 
 class FFDecode : public IDecode {
 public:
+    static void InitHard(void *vm);
+
     bool Open(XParameter param) override;//打开解码器
+    bool Open(XParameter param, bool isHard) override;//打开解码器
     bool SendPacket(XData data) override;
 
     XData ReceiveFrame() override;

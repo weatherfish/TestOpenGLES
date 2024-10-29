@@ -23,7 +23,7 @@ static const char *vertexShaderSrc = R"(
 )";
 
 // 片段着色器
-static const char *fragmentShaderSrc = R"(
+static const char *fragmentYUV420P = R"(
         precision mediump float;
 
         varying vec2 vTexCord;
@@ -48,6 +48,53 @@ static const char *fragmentShaderSrc = R"(
         }
 )";
 
+static const char *fragmentNV12 = R"(
+        precision mediump float;
+
+        varying vec2 vTexCord;
+
+        uniform sampler2D yTexture;
+        uniform sampler2D uvTexture;
+
+        void main() {
+            vec3 yuv;
+            vec3 rgb;
+            yuv.r = texture2D(yTexture, vTexCord).r;
+            yuv.g = texture2D(uvTexture, vTexCord).r - 0.5;
+            yuv.b = texture2D(uvTexture, vTexCord).a - 0.5;
+
+            rgb = mat3(
+                1.0, 1.0, 1.0,
+                0.0, -0.39465, 2.03211,
+                1.13983, -0.5806, 0.0) * yuv;
+
+            gl_FragColor = vec4(rgb, 1.0);
+        }
+)";
+
+static const char *fragmentNV21 = R"(
+        precision mediump float;
+
+        varying vec2 vTexCord;
+
+        uniform sampler2D yTexture;
+        uniform sampler2D uvTexture;
+
+        void main() {
+            vec3 yuv;
+            vec3 rgb;
+            yuv.r = texture2D(yTexture, vTexCord).r;
+            yuv.g = texture2D(uvTexture, vTexCord).a - 0.5;
+            yuv.b = texture2D(uvTexture, vTexCord).r - 0.5;
+
+            rgb = mat3(
+                1.0, 1.0, 1.0,
+                0.0, -0.39465, 2.03211,
+                1.13983, -0.5806, 0.0) * yuv;
+
+            gl_FragColor = vec4(rgb, 1.0);
+        }
+)";
 static float ver[] = {
         1.0f, -1.0f, 0.0f,
         -1.0f, -1.0f, 0.0f,
@@ -114,9 +161,22 @@ static void checkGLError(const std::string &funName) {
     }
 }
 
-bool XShader::Init() {
+bool XShader::Init(XTextureType type) {
     vertexShader = InitShader(vertexShaderSrc, GL_VERTEX_SHADER);
-    fragmentShader = InitShader(fragmentShaderSrc, GL_FRAGMENT_SHADER);
+    switch (type) {
+        case TEXTURE_YUV420P:
+            fragmentShader = InitShader(fragmentYUV420P, GL_FRAGMENT_SHADER);
+            break;
+        case TEXTURE_NV12:
+            fragmentShader = InitShader(fragmentNV12, GL_FRAGMENT_SHADER);
+            break;
+        case TEXTURE_NV21:
+            fragmentShader = InitShader(fragmentNV21, GL_FRAGMENT_SHADER);
+            break;
+        default:
+            XLOGE("XShader format is not support");
+            break;
+    }
 
     GLint status;
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &status);
@@ -124,6 +184,7 @@ bool XShader::Init() {
         XLOGE("#### Vertex shader compilation failed");
         return false;
     }
+
     glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &status);
     if (status != GL_TRUE) {
         XLOGE("#### Fragment shader compilation failed");
@@ -157,14 +218,26 @@ bool XShader::Init() {
     //材质纹理初始化
     //设置纹理层
     glUniform1i(glGetUniformLocation(program, "yTexture"), 0);
-    glUniform1i(glGetUniformLocation(program, "uTexture"), 1);
-    glUniform1i(glGetUniformLocation(program, "vTexture"), 2);
 
+    switch (type) {
+        case TEXTURE_YUV420P:
+            glUniform1i(glGetUniformLocation(program, "uTexture"), 1);
+            glUniform1i(glGetUniformLocation(program, "vTexture"), 2);
+            break;
+        case TEXTURE_NV12:
+            glUniform1i(glGetUniformLocation(program, "uvTexture"), 1);
+            break;
+        case TEXTURE_NV21:
+            break;
+    }
     XLOGI("#### Init Shader success");
     return true;
 }
 
-void XShader::GetTexture(unsigned int index, int width, int height, unsigned char *buf) {
+void
+XShader::GetTexture(unsigned int index, int width, int height, unsigned char *buf, bool isAlpha) {
+    GLint format = GL_LUMINANCE;
+    if (isAlpha) format = GL_LUMINANCE_ALPHA;
     if (texts[index] == 0) {
         //纹理初始化
         glGenTextures(1, &texts[index]);
@@ -172,12 +245,12 @@ void XShader::GetTexture(unsigned int index, int width, int height, unsigned cha
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         //设置纹理大小格式
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0, GL_LUMINANCE,
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format,
                      GL_UNSIGNED_BYTE, nullptr);
     }
     glActiveTexture(GL_TEXTURE0 + index); //激活第一个
     glBindTexture(GL_TEXTURE_2D, texts[index]); //绑定到创建的y
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_LUMINANCE, GL_UNSIGNED_BYTE,
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, format, GL_UNSIGNED_BYTE,
                     buf);
 }
 

@@ -6,14 +6,16 @@
 #define XPLAYER_XSHADER_H
 
 #include <GLES2/gl2.h>
+#include "XTexture.h"
 
 class XShader {
 
 public:
-    virtual bool Init();
+    virtual bool Init(XTextureType type);
 
     virtual void
-    GetTexture(unsigned int index, int width, int height, unsigned char *buf);//获取材质并映射到内存
+    GetTexture(unsigned int index, int width, int height, unsigned char *buf,
+               bool isAlpha);//获取材质并映射到内存
 
     virtual void Draw();
 
