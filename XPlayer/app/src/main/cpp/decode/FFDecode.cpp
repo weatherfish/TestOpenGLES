@@ -10,7 +10,7 @@ extern "C" {
 }
 
 bool FFDecode::Open(XParameter param) {
-    this->Open(param, false);
+    return this->Open(param, false);
 }
 
 bool FFDecode::Open(XParameter param, bool isHard) {
