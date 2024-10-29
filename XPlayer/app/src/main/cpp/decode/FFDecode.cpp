@@ -19,10 +19,12 @@ bool FFDecode::Open(XParameter param, bool isHard) {
     const AVCodec *cd = avcodec_find_decoder(p->codec_id);
     if (isHard) {
         cd = avcodec_find_decoder_by_name("h264_mediacodec");//
+        if (!cd) {
+            cd = avcodec_find_decoder(p->codec_id);
+        }
     }
     if (!cd) {
         XLOGE("#### avcodec_find_decoder %d failed isHard = %d", p->codec_id, isHard);
-        return false;
     }
     //创建解码上下文，并复制参数
     codec = avcodec_alloc_context3(cd);

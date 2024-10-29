@@ -38,7 +38,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *res) {
     demux->Open("/sdcard/sample.mp4");
 
     IDecode *vdecode = new FFDecode();
-    vdecode->Open(demux->GetVParam());
+    vdecode->Open(demux->GetVParam(), true);
     demux->AddObserver(vdecode);
 
     IDecode *adecode = new FFDecode();
