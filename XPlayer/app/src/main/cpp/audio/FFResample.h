@@ -14,7 +14,9 @@ extern "C" {
 
 class FFResample : public IResample {
 public:
-    bool Open(XParameter in, XParameter out = XParameter()) override;
+    bool Open(XParameter in) override;
+
+    bool Open(XParameter in, XParameter out) override;
 
     XData Resample(XData indata) override;
 

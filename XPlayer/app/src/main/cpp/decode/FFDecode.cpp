@@ -85,9 +85,8 @@ XData FFDecode::ReceiveFrame() {
                  frame->nb_samples * 2;
     }
     d.format = frame->format;
-//    XLOGI("#### frame format is %d", frame->format);
+    XLOGI("#### type %d frame format is %d", codec->codec_type, frame->format);
     memcpy(d.datas, frame->data, sizeof(frame->data));
-
     return d;
 }
 
