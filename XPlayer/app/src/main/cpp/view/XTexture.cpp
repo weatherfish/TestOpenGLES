@@ -10,7 +10,7 @@
 class CXTexture : public XTexture {
 public:
     XShader shader;
-    XTextureType type_;
+    XTextureType type_ = XTextureType::TEXTURE_YUV420P;
 
     bool Init(void *win, XTextureType type) override {
         this->type_ = type;
